@@ -2,21 +2,27 @@
   "name": "webapp",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"nodemon server"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Pranav-Agarwal/webapp.git"
   },
-  "author": "",
+  "author": "Pranav Agarwal",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Pranav-Agarwal/webapp/issues"
   },
   "homepage": "https://github.com/Pranav-Agarwal/webapp#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
   }
 }
