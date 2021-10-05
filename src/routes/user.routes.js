@@ -6,9 +6,9 @@ const userController =   require('../controllers/user.controller');
 router.post('/', userController.create);
 
 // Retrieve a single employee with id
-router.get('/:id', userController.findById);
+router.get('/self', userController.getUser);
 
 // Update a employee with id
-router.put('/:id', userController.update);
+router.put('/self', userController.update);
 
 module.exports = router
