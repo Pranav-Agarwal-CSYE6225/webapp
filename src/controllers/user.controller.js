@@ -35,9 +35,7 @@ exports.create = function(req, res) {
 
 exports.getUser = function(req, res) {
   const token = req.headers.authorization.split(" ")[1]
-  console.log(token+"here")
   const [username,password] = Buffer.from(token,'base64').toString('ascii').split(':');
-  console.log(username+" "+password);
   User.findUser(username, function(err, user) {
     if (err) res.status(400).send({ error:true, message: 'Bad request' });
     else if (user[0]==null) res.status(400).send({ error:true, message: 'User not found' });
@@ -56,9 +54,7 @@ exports.getUser = function(req, res) {
 
 exports.update = function(req, res) {
   const token = req.headers.authorization.split(" ")[1]
-  console.log(token+"here")
   const [username,password] = Buffer.from(token,'base64').toString('ascii').split(':');
-  console.log(username+" "+password);
   User.findUser(username,function(err, userToUpdate) {
     if (err) res.status(400).send({ error:true, message: 'Bad request' });
     else if (userToUpdate[0]==null) res.status(400).send({ error:true, message: 'User not found' });
@@ -67,19 +63,20 @@ exports.update = function(req, res) {
         if (err) res.status(400).send({ error:true, message: 'Bad request' });
         if(!result) res.status(403).send({ error:true, message: 'Wrong Password' });  
         else{
-          console.log(req.body);
-          let {first_name,last_name,username,password} = req.body;
+          let {first_name,last_name,username,password,account_created,account_updated} = req.body;
           if(first_name==null) first_name = userToUpdate[0].first_name;
           if(last_name==null) last_name = userToUpdate[0].last_name;
           if(password==null) password = userToUpdate[0].password;
-          console.log(first_name+" "+last_name+" "+userToUpdate[0].username+" "+password)
-          bcrypt.hash(password, saltRounds, function(err, hash) {
-            if (err) res.status(400).send({ error:true, message: 'Bad request' });
-            User.update(first_name,last_name,userToUpdate[0].username,hash, function(err, user) {
+          if(username!=null || account_created!=null || account_updated!=null) res.status(400).send({ error:true, message: 'Bad request' });
+          else{
+            bcrypt.hash(password, saltRounds, function(err, hash) {
               if (err) res.status(400).send({ error:true, message: 'Bad request' });
-              res.status(204).send({ error:false, message: 'User successfully updated' });
+              User.update(first_name,last_name,userToUpdate[0].username,hash, function(err, user) {
+                if (err) res.status(400).send({ error:true, message: 'Bad request' });
+                res.status(204).send({ error:false, message: 'User successfully updated' });
+              });
             });
-          });
+          }
         }
       });
     }
