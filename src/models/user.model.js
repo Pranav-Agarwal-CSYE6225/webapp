@@ -15,7 +15,6 @@ User.create = function (first_name,last_name,username,password, result) {
     result(err, null);
   }
   else{
-    console.log(res);
     result(null,res);
   }
   });
@@ -39,7 +38,6 @@ User.update = function(first_name,last_name,username,password, result){
       console.log("error: ", err);
       result(err, null);
     }else{
-      console.log(username);
       result(null, res);
     }
   });
