@@ -43,7 +43,9 @@ con.connect(function(err) {
         file_name varchar(100) NOT NULL,
         url varchar(100) NOT NULL,
         upload_date date NOT NULL DEFAULT (current_date),
-        PRIMARY KEY (id,file_name)
+        user_id int NOT NULL,
+        PRIMARY KEY (id,file_name),
+        FOREIGN KEY (user_id) REFERENCES user(id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`
     
       dbConn.query(createUser, function (err, result) {
