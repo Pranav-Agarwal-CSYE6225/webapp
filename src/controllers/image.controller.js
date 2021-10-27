@@ -3,12 +3,6 @@ const Image = require('../models/image.model');
 const aws = require('aws-sdk');
 var config = require('../../config.json');
 
-aws.config.update({
-    secretAccessKey: 'QWuLK4QVrpl89maGXCMIVuVYYShIUHLsnfTMa1rr',
-    accessKeyId: 'AKIA3O4SWH5KHVN4IX57',
-    region: 'us-east-1'
-});
-
 const s3 = new aws.S3();
 
 exports.create = async function(req, res) {

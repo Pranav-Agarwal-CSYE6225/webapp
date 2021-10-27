@@ -11,12 +11,6 @@ const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
 const path = require('path')
 
-aws.config.update({
-    secretAccessKey: 'QWuLK4QVrpl89maGXCMIVuVYYShIUHLsnfTMa1rr',
-    accessKeyId: 'AKIA3O4SWH5KHVN4IX57',
-    region: 'us-east-1'
-});
-
 s3 = new aws.S3();
 
 async function authorizeUser(req,res,next){
