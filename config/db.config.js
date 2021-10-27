@@ -42,7 +42,7 @@ con.connect(function(err) {
         id int NOT NULL AUTO_INCREMENT,
         file_name varchar(100) NOT NULL,
         url varchar(100) NOT NULL,
-        upload_date date NOT NULL DEFAULT (current_date),
+        upload_date date NOT NULL,
         user_id int NOT NULL,
         PRIMARY KEY (id,file_name),
         FOREIGN KEY (user_id) REFERENCES user(id)
