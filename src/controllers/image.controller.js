@@ -13,6 +13,10 @@ const s3 = new aws.S3();
 
 exports.create = async function(req, res) {
     try{
+        if(!req.params.fileName){
+            res.status(400).send({ error:true, message: 'no file uploaded' });
+            return;
+        }
         const image = await Image.findImage(req.params.userId);
         if(image.length!=0){
             const params = {
