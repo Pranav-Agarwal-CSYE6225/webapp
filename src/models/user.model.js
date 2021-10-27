@@ -1,6 +1,6 @@
 'use strict';
 var dbConn = require('../../config/db.config');
-//Employee object create
+//User object create
 var User = function(first_name,last_name,username,password){
     this.first_name = first_name;
     this.last_name = last_name;

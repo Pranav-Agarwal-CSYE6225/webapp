@@ -1,14 +1,86 @@
 const express = require('express')
 const router = express.Router()
 const userController =   require('../controllers/user.controller');
+const imageController =   require('../controllers/image.controller');
+const User = require('../models/user.model');
+const bcrypt = require('bcrypt');
+const multer = require('multer');
+const config = require('../../config.json');
+let fs = require('fs-extra');
+const multerS3 = require('multer-s3');
+const aws = require('aws-sdk');
+const path = require('path')
 
-// Create a new employee
+s3 = new aws.S3();
+
+async function authorizeUser(req,res,next){
+    const token = req.headers.authorization.split(" ")[1]
+    const [username,password] = Buffer.from(token,'base64').toString('ascii').split(':');
+    try{
+      const user = await User.findUser(username);
+      if(user[0]==null){
+        res.status(400).send({ error:true, message: 'User not found' });
+        return;
+      }
+      else if(!(await bcrypt.compare(password, user[0].password))){
+        res.status(400).send({ error:true, message: 'Wrong Password' });
+        return;
+      }
+      else{
+        req.params.userId = user[0].id;
+        next();
+      }
+    }
+    catch(err){
+      console.log(err);
+      res.status(400).send({ error:true, message: 'bad request' });
+    }
+}
+
+function uploadFile(req,res,next){
+    const upload = multer({
+        storage: multerS3({
+            s3: s3,
+            bucket: config.s3,
+            key: async function (req, file, cb) {
+                const filePath = config.s3+"/"+req.params.userId+"/"+ Date.now() + path.extname(file.originalname);
+                req.params.filePath = filePath;
+                req.params.fileName = file.originalname;
+                const ext = path.extname(file.originalname).toLowerCase();
+                if(!(ext==".png" || ext==".jpg" || ext==".jpeg")){
+                    req.fileValidationError = "Forbidden extension";
+                    return cb("err",null);
+                }
+                cb(null, filePath);
+            }
+        })
+    }).single('img');
+
+    upload(req, res, function (err) {
+        if (req.fileValidationError) {
+            return res.status(400).send({ error:true, message: 'Incorrect File Type' });
+        }
+       else{
+           next();
+       }
+    });
+}
+// Create a new user
 router.post('/', userController.create);
 
-// Retrieve a single employee with id
-router.get('/self', userController.getUser);
+// Retrieve a user
+router.get('/self', authorizeUser, userController.getUser);
 
-// Update a employee with id
-router.put('/self', userController.update);
+// Update a user
+router.put('/self', authorizeUser, userController.update);
+
+// Create/Update an image
+router.post('/self/pic', authorizeUser, uploadFile,imageController.create);
+
+// get an image
+router.get('/self/pic', authorizeUser, imageController.getImage);
+
+// delete an image
+router.delete('/self/pic', authorizeUser, imageController.delete);
 
 module.exports = router

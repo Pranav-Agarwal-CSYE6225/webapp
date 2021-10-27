@@ -38,19 +38,9 @@ exports.getUser = async function(req, res) {
   const [username,password] = Buffer.from(token,'base64').toString('ascii').split(':');
   try{
     const user = await User.findUser(username);
-    if(user[0]==null){
-      res.status(400).send({ error:true, message: 'User not found' });
-      return;
-    }
-    else if(!(await bcrypt.compare(password, user[0].password))){
-      res.status(400).send({ error:true, message: 'Wrong Password' });
-      return;
-    }
-    else{
-      delete user[0].password;
-      res.status(200).json(user[0]);
-      return;
-    }
+    delete user[0].password;
+    res.status(200).json(user[0]);
+    return;
   }
   catch(err){
     console.log(err);
@@ -60,31 +50,21 @@ exports.getUser = async function(req, res) {
 
 exports.update = async function(req, res) {
   const token = req.headers.authorization.split(" ")[1]
-  const [username,password] = Buffer.from(token,'base64').toString('ascii').split(':');
+  const [user,password] = Buffer.from(token,'base64').toString('ascii').split(':');
   try{
-    const userToUpdate = await User.findUser(username);
-    if(userToUpdate[0]==null){
-      res.status(400).send({ error:true, message: 'User not found' });
+    const userToUpdate = await User.findUser(user);
+    let {first_name,last_name,username,password,account_created,account_updated} = req.body;
+    if(first_name==null) first_name = userToUpdate[0].first_name;
+    if(last_name==null) last_name = userToUpdate[0].last_name;
+    if(password==null) password = userToUpdate[0].password;
+    if(username!=null || account_created!=null || account_updated!=null){
+      res.status(400).send({ error:true, message: 'Bad request' });
       return;
-    }
-    else if(!(await bcrypt.compare(password, userToUpdate[0].password))){
-      res.status(400).send({ error:true, message: 'Wrong Password' });
-      return;
-    }
-    else{
-      let {first_name,last_name,username,password,account_created,account_updated} = req.body;
-      if(first_name==null) first_name = userToUpdate[0].first_name;
-      if(last_name==null) last_name = userToUpdate[0].last_name;
-      if(password==null) password = userToUpdate[0].password;
-      if(username!=null || account_created!=null || account_updated!=null){
-        res.status(400).send({ error:true, message: 'Bad request' });
-        return;
-      } 
-      const hash = await bcrypt.hash(password, saltRounds);
-      await User.update(first_name,last_name,userToUpdate[0].username,hash);
-      res.status(204).send({ error:false, message: 'User successfully updated' });
-      return;
-    }
+    } 
+    const hash = await bcrypt.hash(password, saltRounds);
+    await User.update(first_name,last_name,userToUpdate[0].username,hash);
+    res.status(204).send({ error:false, message: 'User successfully updated' });
+    return;
   }
   catch(err){
     console.log(err);
