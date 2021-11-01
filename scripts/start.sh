@@ -1,4 +1,4 @@
 #!/bin/bash
-source ~/.bashrc
-source ~/.nvm/nvm.sh
+source /home/ubuntu/.bashrc
+source /home/ubuntu/.nvm/nvm.sh
 npm start
