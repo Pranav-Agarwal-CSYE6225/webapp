@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
  - source: .
-   destination: /home/server/
+   destination: /home/ubuntu/server/
 hooks:
   AfterInstall:
    - location: scripts/install.sh
