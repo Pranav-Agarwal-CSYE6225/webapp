@@ -47,4 +47,4 @@ jobs:
             --application-name csye6225-webapp \
             --deployment-group-name csye6225-webapp-deployment \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
-            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
+            --s3-location s3://${{ secrets.S3_BUCKET }}/release.zip
