@@ -47,7 +47,7 @@ jobs:
           --description "This is a revision for the webapp" \
           --ignore-hidden-files \
           --s3-location s3://${{ secrets.S3_BUCKET }}/webapp.zip \
-          --source .
+          --source webapp
      # Step 3
       - name: Create CodeDeploy Deployment
         id: deploy
