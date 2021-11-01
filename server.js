@@ -26,5 +26,5 @@ app.use('/v1/user', userRoutes)
 
 // listen for requests
 app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+  console.log(`Server is listening on Port ${port}`);
 });
