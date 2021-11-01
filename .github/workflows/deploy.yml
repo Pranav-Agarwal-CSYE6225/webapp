@@ -13,7 +13,7 @@ jobs:
     
     - name: Zip Folder
       run: |
-       zip -r release.zip . -x ".git/*" ".github/*" ".gitignore"
+       zip -r release.zip . -x ".git/*" ".github/*" ".gitignore" "LICENSE" "README.md"
        mkdir build
        cp ./release.zip ./build
 
