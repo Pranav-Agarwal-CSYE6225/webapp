@@ -5,10 +5,10 @@ files:
    destination: /home/server/
 hooks:
   AfterInstall:
-   - location: scripts/install
+   - location: scripts/install.sh
      timeout: 300
      runas: root
   ApplicationStart:
-   - location: scripts/start
+   - location: scripts/start.sh
      timeout: 300
      runas: root
