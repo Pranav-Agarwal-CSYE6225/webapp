@@ -40,6 +40,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.SECRET_KEY }}
           aws-region: us-east-1
      # Step 2
+      - name: Push code to S3
+        run: |
+          aws deploy push \
+          --application-name csye6225-webapp \
+          --description "This is a revision for the webapp" \
+          --ignore-hidden-files \
+          --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=webapp.zip
+          --source .
+     # Step 3
       - name: Create CodeDeploy Deployment
         id: deploy
         run: |
