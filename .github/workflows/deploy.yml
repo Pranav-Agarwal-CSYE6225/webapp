@@ -42,12 +42,13 @@ jobs:
      # Step 2
       - name: Push code to S3
         run: |
+          cd webapp
           aws deploy push \
           --application-name csye6225-webapp \
           --description "This is a revision for the webapp" \
           --ignore-hidden-files \
           --s3-location s3://${{ secrets.S3_BUCKET }}/webapp.zip \
-          --source webapp
+          --source .
      # Step 3
       - name: Create CodeDeploy Deployment
         id: deploy
