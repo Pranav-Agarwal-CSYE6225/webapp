@@ -46,7 +46,7 @@ jobs:
           --application-name csye6225-webapp \
           --description "This is a revision for the webapp" \
           --ignore-hidden-files \
-          --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=webapp.zip
+          --s3-location s3://${{ secrets.S3_BUCKET }}/webapp.zip \
           --source .
      # Step 3
       - name: Create CodeDeploy Deployment
