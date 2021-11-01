@@ -42,10 +42,10 @@ jobs:
      # Step 2
       - name: Create CodeDeploy Deployment
         id: deploy
-        run: >-
-          aws deploy create-deployment
-            --application-name csye6225-webapp
-            --deployment-group-name csye6225-webapp-deployment
-            --deployment-config-name CodeDeployDefault.AllAtOnce
-            --description "Node app deployed to ec2"
+        run: |
+          aws deploy create-deployment \
+            --application-name csye6225-webapp \
+            --deployment-group-name csye6225-webapp-deployment \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --description "Node app deployed to ec2" \
             --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=webapp.zip
