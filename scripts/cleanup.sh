@@ -1,4 +1,6 @@
 #!/bin/bash
-killall node
+killall node || true
 cd /home/ubuntu/server
-rm -v !("config.json")
+cp ./config.json ../
+rm -rf ./*
+cp ../config.json ./
