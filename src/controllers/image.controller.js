@@ -7,10 +7,20 @@ const s3 = new aws.S3();
 
 exports.create = async function(req, res) {
     try{
-        if(!req.params.fileName){
-            res.status(400).send({ error:true, message: 'no file uploaded' });
-            return;
+        const fileName = Date.now();
+        const fileType = req.headers['content-type'].split('/')[1];
+        const filePath = config.s3+"/"+req.params.userId+"/"+ fileName + "." + fileType;
+        if(!(fileType=="png" || fileType=="jpg" || fileType=="jpeg")){
+          return res.status(400).send({ error:true, message: 'Incorrect File Type' });
         }
+        const params = {
+          Bucket :config.s3,
+          Key : filePath,
+          Body : req.body
+        }
+
+        await s3.upload(params).promise();
+
         const image = await Image.findImage(req.params.userId);
         if(image.length!=0){
             const params = {
@@ -20,12 +30,13 @@ exports.create = async function(req, res) {
             await s3.deleteObject(params).promise();
             await Image.delete(req.params.userId);
         }
-        await Image.create(req.params.fileName,req.params.filePath,req.params.userId);
+        await Image.create(fileName,filePath,req.params.userId);
         const newImage = await Image.findImage(req.params.userId);
         res.status(201).json(newImage[0]);
         return;
     }
     catch(err){
+        console.log(err);
         res.status(400).send({ error:true, message: 'bad request' });
     }
 };

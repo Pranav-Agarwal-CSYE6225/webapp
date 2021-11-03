@@ -4,15 +4,8 @@ const userController =   require('../controllers/user.controller');
 const imageController =   require('../controllers/image.controller');
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
-const multer = require('multer');
-const config = require('../../config.json');
-let fs = require('fs-extra');
-const multerS3 = require('multer-s3');
-const aws = require('aws-sdk');
-const path = require('path')
 
-s3 = new aws.S3();
-
+// Middleware to authenticate user
 async function authorizeUser(req,res,next){
     const token = req.headers.authorization.split(" ")[1]
     const [username,password] = Buffer.from(token,'base64').toString('ascii').split(':');
@@ -37,34 +30,6 @@ async function authorizeUser(req,res,next){
     }
 }
 
-function uploadFile(req,res,next){
-    const upload = multer({
-        storage: multerS3({
-            s3: s3,
-            bucket: config.s3,
-            key: async function (req, file, cb) {
-                const filePath = config.s3+"/"+req.params.userId+"/"+ Date.now() + path.extname(file.originalname);
-                req.params.filePath = filePath;
-                req.params.fileName = file.originalname;
-                const ext = path.extname(file.originalname).toLowerCase();
-                if(!(ext==".png" || ext==".jpg" || ext==".jpeg")){
-                    req.fileValidationError = "Forbidden extension";
-                    return cb("err",null);
-                }
-                cb(null, filePath);
-            }
-        })
-    }).single('img');
-
-    upload(req, res, function (err) {
-        if (req.fileValidationError) {
-            return res.status(400).send({ error:true, message: 'Incorrect File Type' });
-        }
-       else{
-           next();
-       }
-    });
-}
 // Create a new user
 router.post('/', userController.create);
 
@@ -75,7 +40,7 @@ router.get('/self', authorizeUser, userController.getUser);
 router.put('/self', authorizeUser, userController.update);
 
 // Create/Update an image
-router.post('/self/pic', authorizeUser, uploadFile,imageController.create);
+router.post('/self/pic', authorizeUser,imageController.create);
 
 // get an image
 router.get('/self/pic', authorizeUser, imageController.getImage);
