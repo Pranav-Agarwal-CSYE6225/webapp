@@ -13,6 +13,9 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // parse requests of content-type - application/json
 app.use(bodyParser.json())
 
+// parse raw buffer requests
+app.use(bodyParser.raw({type: '*/*',limit: '50mb'}));
+
 // define a root route
 app.get('/', (req, res) => {
   res.send("Hello World");
@@ -22,7 +25,7 @@ app.get('/', (req, res) => {
 const userRoutes = require('./src/routes/user.routes')
 
 // using as middleware
-app.use('/v2/user', userRoutes)
+app.use('/v1/user', userRoutes)
 
 // listen for requests
 app.listen(port, () => {
