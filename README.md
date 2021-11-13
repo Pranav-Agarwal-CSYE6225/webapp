@@ -1,7 +1,11 @@
 # webapp
 
+<<<<<<< HEAD
 ADDED DEMO 
 
+=======
+changed readme for demo
+>>>>>>> 65ea4af0295a943145925bd4b7130b31dfc89d6e
 ## Deployment Instructions
 1. Install Node 14.18 and the included npm
 2. clone the repository
