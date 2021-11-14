@@ -3,8 +3,13 @@ const User = require('../models/user.model');
 const validator = require("email-validator");
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const log = require("../../logs")
+const logger = log.getLogger('logs');
+var SDC = require('statsd-client');
+Metrics = new SDC({port: 8125});
 
 exports.create = async function(req, res) {
+  Metrics.increment('user.POST.createUser');
   const {first_name,last_name,username,password} = req.body;
   if(first_name==null || last_name==null || username==null || password==null){
     res.status(400).send({ error:true, message: 'Missing required fields' });
@@ -23,6 +28,7 @@ exports.create = async function(req, res) {
       await User.create(first_name,last_name,username,hash);
       const newUser = await User.findUser(username);
       delete newUser[0].password;
+      logger.info("created new user with ID "+newUser[0].id);
       res.status(201).json(newUser[0]);
       return;
     }
@@ -34,11 +40,13 @@ exports.create = async function(req, res) {
 };
 
 exports.getUser = async function(req, res) {
+  Metrics.increment('user.GET.getUser');
   const token = req.headers.authorization.split(" ")[1]
   const [username,password] = Buffer.from(token,'base64').toString('ascii').split(':');
   try{
     const user = await User.findUser(username);
     delete user[0].password;
+    logger.info("retrieved user with ID "+user[0].id);
     res.status(200).json(user[0]);
     return;
   }
@@ -49,6 +57,7 @@ exports.getUser = async function(req, res) {
 };
 
 exports.update = async function(req, res) {
+  Metrics.increment('user.PUT.updateUser');
   const token = req.headers.authorization.split(" ")[1]
   const [user,password] = Buffer.from(token,'base64').toString('ascii').split(':');
   try{
@@ -63,6 +72,7 @@ exports.update = async function(req, res) {
     } 
     const hash = await bcrypt.hash(password, saltRounds);
     await User.update(first_name,last_name,userToUpdate[0].username,hash);
+    logger.info("updated user");
     res.status(204).send({ error:false, message: 'User successfully updated' });
     return;
   }
