@@ -5,7 +5,7 @@ var config = require('../../config.json');
 const log = require("../../logs")
 const logger = log.getLogger('logs');
 var SDC = require('statsd-client');
-Metrics = new SDC({port: 8125});
+var Metrics = new SDC({port: 8125});
 
 const s3 = new aws.S3();
 
