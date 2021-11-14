@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const userController =   require('./src/controllers/user.controller');
+const log = require("./logs")
+const logger = log.getLogger('logs');
 // create express app
 const app = express();
 
@@ -31,3 +33,5 @@ app.use('/v1/user', userRoutes)
 app.listen(port, () => {
   console.log(`Server is listening on Port ${port}`);
 });
+
+logger.info("Application running!");

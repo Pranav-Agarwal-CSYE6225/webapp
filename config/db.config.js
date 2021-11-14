@@ -2,6 +2,8 @@
 
 const mysql = require('mysql');
 const config = require('../config.json');
+const log = require("../logs")
+const logger = log.getLogger('logs');
 
 // Create db
 let con = mysql.createConnection({
@@ -57,6 +59,7 @@ con.connect(function(err) {
       });
     
       console.log("Database Connected!");
+      logger.info("Database Connected.");
     });
   });
 });

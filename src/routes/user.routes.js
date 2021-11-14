@@ -4,6 +4,8 @@ const userController =   require('../controllers/user.controller');
 const imageController =   require('../controllers/image.controller');
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
+const log = require("../../logs")
+const logger = log.getLogger('logs');
 
 // Middleware to authenticate user
 async function authorizeUser(req,res,next){
@@ -12,20 +14,24 @@ async function authorizeUser(req,res,next){
     try{
       const user = await User.findUser(username);
       if(user[0]==null){
+        logger.info("User not found, authorization failed.");
         res.status(400).send({ error:true, message: 'User not found' });
         return;
       }
       else if(!(await bcrypt.compare(password, user[0].password))){
+        logger.info("Wrong password, authorization failed.");
         res.status(400).send({ error:true, message: 'Wrong Password' });
         return;
       }
       else{
         req.params.userId = user[0].id;
+        logger.info("Request Authorized.");
         next();
       }
     }
     catch(err){
       console.log(err);
+      logger.info("bad request.");
       res.status(400).send({ error:true, message: 'bad request' });
     }
 }
