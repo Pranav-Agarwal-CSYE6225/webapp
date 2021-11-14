@@ -1,5 +1,7 @@
 'use strict';
 var dbConn = require('../../config/db.config');
+var SDC = require('statsd-client');
+var Metrics = new SDC({port: 8125});
 //Image object create
 var Image = function(filename,url,user_id){
     this.filename = filename;
@@ -8,6 +10,7 @@ var Image = function(filename,url,user_id){
 };
 
 Image.create = function (filename,url,user_id) {
+  let timer = new Date();
   return new Promise((resolve,reject) => {
     var date = new Date();
     const upload_date =  new Date(date.getFullYear()+"-"+date.getMonth()+"-"+date.getDate());
@@ -16,6 +19,7 @@ Image.create = function (filename,url,user_id) {
         reject(err);
       }
       else{
+        Metrics.timing('ImageDB.insert.timer', timer);
         resolve(res);
       }
     });
@@ -23,12 +27,14 @@ Image.create = function (filename,url,user_id) {
 };
 
 Image.delete = function (user_id) {
+  let timer = new Date();
   return new Promise((resolve,reject) => {
     dbConn.query("DELETE FROM image WHERE user_id = ? ", [user_id], function (err, res) {
     if(err) {
       reject(err);
     }
     else{
+      Metrics.timing('ImageDB.delete.timer', timer);
       resolve(res);
     }
     });
@@ -36,11 +42,13 @@ Image.delete = function (user_id) {
 };
 
 Image.findImage = function(user_id){
+  let timer = new Date();
   return new Promise((resolve,reject) => {
     dbConn.query("Select file_name,id,url,upload_date,user_id from image where user_id = ? ", user_id, function (err, res) {
       if(err) {
         reject(err);
       }else{
+        Metrics.timing('ImageDB.select.timer', timer);
         resolve(res);
       }
     });
