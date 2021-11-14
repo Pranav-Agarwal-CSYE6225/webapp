@@ -6,7 +6,7 @@ const saltRounds = 10;
 const log = require("../../logs")
 const logger = log.getLogger('logs');
 var SDC = require('statsd-client');
-Metrics = new SDC({port: 8125});
+var Metrics = new SDC({port: 8125});
 
 exports.create = async function(req, res) {
   Metrics.increment('user.POST.createUser');
