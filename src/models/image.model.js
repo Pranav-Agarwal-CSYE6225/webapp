@@ -1,5 +1,6 @@
 'use strict';
 var dbConn = require('../../config/db.config');
+var dbConn_replica = require('../../config/db_replica.config');
 var SDC = require('statsd-client');
 var Metrics = new SDC({port: 8125});
 //Image object create
@@ -44,7 +45,7 @@ Image.delete = function (user_id) {
 Image.findImage = function(user_id){
   let timer = new Date();
   return new Promise((resolve,reject) => {
-    dbConn.query("Select file_name,id,url,upload_date,user_id from image where user_id = ? ", user_id, function (err, res) {
+    dbConn_replica.query("Select file_name,id,url,upload_date,user_id from image where user_id = ? ", user_id, function (err, res) {
       if(err) {
         reject(err);
       }else{

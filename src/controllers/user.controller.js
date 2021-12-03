@@ -7,6 +7,7 @@ const log = require("../../logs")
 const logger = log.getLogger('logs');
 var SDC = require('statsd-client');
 var Metrics = new SDC({port: 8125});
+const config = require('../../config.json');
 const aws = require('aws-sdk');
 const awsConf = {
   region: "us-east-1"
@@ -56,7 +57,7 @@ exports.create = async function(req, res) {
       const data = {
           Subject: "Email",
           Message: JSON.stringify(paramSNS),
-          TopicArn: connection.topicArn
+          TopicArn: config.topic_arn
       }
       logger.info("publishing to SNS ");
       await snsClient.publish(data).promise();
