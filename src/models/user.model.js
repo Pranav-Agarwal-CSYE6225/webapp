@@ -1,5 +1,6 @@
 'use strict';
 var dbConn = require('../../config/db.config');
+var dbConn_replica = require('../../config/db_replica.config');
 var SDC = require('statsd-client');
 var Metrics = new SDC({port: 8125});
 //User object create
@@ -29,7 +30,7 @@ User.create = function (first_name,last_name,username,password) {
 User.findUser = function (username) {
   let timer = new Date();
   return new Promise((resolve,reject) => {
-    dbConn.query("Select id,first_name,last_name,username,password,account_created,account_updated from user where username = ? ", username, function (err, res) {
+    dbConn_replica.query("Select id,first_name,last_name,username,password,account_created,account_updated from user where username = ? ", username, function (err, res) {
     if(err) {
       console.log("error: ", err);
       reject(err);
