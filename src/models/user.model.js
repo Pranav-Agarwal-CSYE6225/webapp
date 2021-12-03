@@ -61,7 +61,7 @@ User.update = function(first_name,last_name,username,password, result){
 User.verifyUser = function(username, result){
   let timer = new Date();
   return new Promise((resolve,reject) => {
-    dbConn.query("UPDATE user SET verified=?,verified_on=? WHERE username = ?", [true,timer,username], function (err, res) {
+    dbConn.query("UPDATE user SET verified=?,verified_on=? WHERE username = ?", [1,timer,username], function (err, res) {
       if(err) {
         console.log("error: ", err);
         reject(err);
