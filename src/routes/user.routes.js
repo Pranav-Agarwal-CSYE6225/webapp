@@ -23,8 +23,8 @@ async function authorizeUser(req,res,next){
         res.status(400).send({ error:true, message: 'Wrong Password' });
         return;
       }
-      else if(!(user[0].verified=="true")){
-        logger.info("User email not verified");
+      else if(!(user[0].verified=="1")){
+        logger.info("User email not verified "+user[0].verified);
         res.status(400).send({ error:true, message: 'User email not verified' });
         return;
       }
