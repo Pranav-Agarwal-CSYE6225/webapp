@@ -37,6 +37,8 @@ con.connect(function(err) {
         password varchar(100) NOT NULL,
         account_created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
         account_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        verified boolean not null default 0,
+        verified_on datetime,
         PRIMARY KEY (id,username)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;`
     

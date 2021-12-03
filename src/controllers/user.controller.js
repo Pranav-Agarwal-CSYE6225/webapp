@@ -7,6 +7,13 @@ const log = require("../../logs")
 const logger = log.getLogger('logs');
 var SDC = require('statsd-client');
 var Metrics = new SDC({port: 8125});
+const aws = require('aws-sdk');
+const awsConf = {
+  region: "us-east-1"
+}
+aws.config.update(awsConf);
+const docClient = new aws.DynamoDB.DocumentClient({ profile: 'prod', region: "us-east-1" });
+const snsClient = new aws.SNS({ apiVersion: "2010-03-31" })
 
 exports.create = async function(req, res) {
   let timer = new Date();
@@ -27,6 +34,31 @@ exports.create = async function(req, res) {
       }
       const hash = await bcrypt.hash(password, saltRounds);
       await User.create(first_name,last_name,username,hash);
+      var token = await bcrypt.hash(username, saltRounds);
+      let ttl = 60 * 5
+      const current = Math.floor(Date.now() / 1000)
+      const expiresIn = ttl + current
+      var tableName = "csye6225-dynamo"
+      const params = {
+          TableName: tableName,
+          Item: {
+              UserName : username,
+              token : token,
+              ttl:  expiresIn
+          }
+      }
+      await docClient.put(params).promise();
+      const paramSNS = {
+          "message-type":"email",
+          "email":username, 
+          "token":token
+      }
+      const data = {
+          Subject: "Email",
+          Message: JSON.stringify(paramSNS),
+          TopicArn: connection.topicArn
+      }
+      snsClient.publish(data).promise();
       const newUser = await User.findUser(username);
       delete newUser[0].password;
       logger.info("created new user with ID "+newUser[0].id);
@@ -86,4 +118,48 @@ exports.update = async function(req, res) {
     console.log(err);
     res.status(400).send({ error:true, message: 'bad request' });
   }
+};
+
+exports.verify = async function(req,res){
+  const {email, token} = req.query;
+  const tablename = "csye6225-dynamo"
+  const params = {
+      TableName: tablename,
+      Key:{
+          UserName : email,
+          token : token 
+      }
+  }
+
+  console.log(email)
+  docClient.get(params,(err,data)=>{
+      if(err){
+          console.error(err);
+      }else{
+          let isTokenValid = false;
+          console.log("Checking if record already present in DB!!");
+          if (data.Item == null || data.Item == undefined) {
+              log.error("No record in Dynamo ");
+              isTokenValid = false;
+          } else {
+              if(data.Item.ttl < Math.floor(Date.now() / 1000)) {
+                  log.error("ttl expired ");
+                  isTokenValid = false;
+              } else {
+                  log.success("TTL record valid ");
+                  isTokenValid = true;
+              }
+          }
+          if(isTokenValid) {
+              User.verifyUser(email).then(()=>{
+                  res.send(200)
+              }).catch((e)=>{
+                  res.send(400)
+              })
+          }else{
+              res.send(400)
+          }
+
+      }
+  })
 };
