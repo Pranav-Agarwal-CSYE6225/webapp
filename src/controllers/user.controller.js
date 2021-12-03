@@ -58,7 +58,9 @@ exports.create = async function(req, res) {
           Message: JSON.stringify(paramSNS),
           TopicArn: connection.topicArn
       }
-      snsClient.publish(data).promise();
+      logger.info("publishing to SNS ");
+      await snsClient.publish(data).promise();
+      logger.info("SNS published ");
       const newUser = await User.findUser(username);
       delete newUser[0].password;
       logger.info("created new user with ID "+newUser[0].id);
