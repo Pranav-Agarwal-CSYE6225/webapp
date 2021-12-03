@@ -23,6 +23,11 @@ async function authorizeUser(req,res,next){
         res.status(400).send({ error:true, message: 'Wrong Password' });
         return;
       }
+      else if(!(user[0].verified=="true")){
+        logger.info("User email not verified");
+        res.status(400).send({ error:true, message: 'User email not verified' });
+        return;
+      }
       else{
         req.params.userId = user[0].id;
         logger.info("Request Authorized.");
@@ -53,5 +58,7 @@ router.get('/self/pic', authorizeUser, imageController.getImage);
 
 // delete an image
 router.delete('/self/pic', authorizeUser, imageController.delete);
+
+router.get('/verifyUserEmail',userController.verify);
 
 module.exports = router
