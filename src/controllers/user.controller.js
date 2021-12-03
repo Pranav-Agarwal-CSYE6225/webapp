@@ -124,7 +124,9 @@ exports.update = async function(req, res) {
 };
 
 exports.verify = async function(req,res){
+  logger.info("verifying email");
   const {email, token} = req.query;
+  logger.info("verifying email "+email+" with token "+token);
   const tablename = "csye6225-dynamo"
   const params = {
       TableName: tablename,
@@ -142,14 +144,14 @@ exports.verify = async function(req,res){
           let isTokenValid = false;
           console.log("Checking if record already present in DB!!");
           if (data.Item == null || data.Item == undefined) {
-              log.error("No record in Dynamo ");
+              logger.info("No record in Dynamo ");
               isTokenValid = false;
           } else {
               if(data.Item.ttl < Math.floor(Date.now() / 1000)) {
-                  log.error("ttl expired ");
+                  logger.info("ttl expired ");
                   isTokenValid = false;
               } else {
-                  log.success("TTL record valid ");
+                  logger.info("TTL record valid ");
                   isTokenValid = true;
               }
           }

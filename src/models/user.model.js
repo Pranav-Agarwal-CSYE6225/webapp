@@ -30,7 +30,7 @@ User.create = function (first_name,last_name,username,password) {
 User.findUser = function (username) {
   let timer = new Date();
   return new Promise((resolve,reject) => {
-    dbConn_replica.query("Select id,first_name,last_name,username,password,account_created,account_updated from user where username = ? ", username, function (err, res) {
+    dbConn_replica.query("Select * from user where username = ? ", username, function (err, res) {
     if(err) {
       console.log("error: ", err);
       reject(err);
