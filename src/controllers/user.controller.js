@@ -36,7 +36,7 @@ exports.create = async function(req, res) {
       const hash = await bcrypt.hash(password, saltRounds);
       await User.create(first_name,last_name,username,hash);
       var token = await bcrypt.hash(username, saltRounds);
-      let ttl = 60 * 5
+      let ttl = 60 * 2
       const current = Math.floor(Date.now() / 1000)
       const expiresIn = ttl + current
       var tableName = "csye6225-dynamo"
