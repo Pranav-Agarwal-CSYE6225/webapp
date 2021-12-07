@@ -4,6 +4,7 @@ const mysql = require('mysql');
 const config = require('../config.json');
 const log = require("../logs")
 const logger = log.getLogger('logs');
+var fs = require('fs');
 
 // Create db
 let con = mysql.createConnection({
