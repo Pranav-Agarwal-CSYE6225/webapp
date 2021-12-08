@@ -33,12 +33,11 @@ exports.create = async function(req, res) {
         res.status(400).send({ error:true, message: 'username already exists' });
         return;
       }
-      const hash = await bcrypt.hash(password, saltRounds);
-      await User.create(first_name,last_name,username,hash);
       var token = await bcrypt.hash(username, saltRounds);
       let ttl = 60 * 2
       const current = Math.floor(Date.now() / 1000)
       const expiresIn = ttl + current
+      logger.info("creating dynamo");
       var tableName = "csye6225-dynamo"
       const params = {
           TableName: tableName,
@@ -54,6 +53,7 @@ exports.create = async function(req, res) {
           "email":username, 
           "token":token
       }
+      logger.info("created dynamo");
       const data = {
           Subject: "Email",
           Message: JSON.stringify(paramSNS),
@@ -62,6 +62,8 @@ exports.create = async function(req, res) {
       logger.info("publishing to SNS ");
       await snsClient.publish(data).promise();
       logger.info("SNS published ");
+      const hash = await bcrypt.hash(password, saltRounds);
+      await User.create(first_name,last_name,username,hash);
       const newUser = await User.findUser(username);
       delete newUser[0].password;
       logger.info("created new user with ID "+newUser[0].id);
