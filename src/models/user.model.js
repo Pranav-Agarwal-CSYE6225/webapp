@@ -3,6 +3,8 @@ var dbConn = require('../../config/db.config');
 var dbConn_replica = require('../../config/db_replica.config');
 var SDC = require('statsd-client');
 var Metrics = new SDC({port: 8125});
+const log = require("../../logs")
+const logger = log.getLogger('logs');
 //User object create
 var User = function(first_name,last_name,username,password){
     this.first_name = first_name;
@@ -12,6 +14,16 @@ var User = function(first_name,last_name,username,password){
 };
 
 User.create = function (first_name,last_name,username,password) {
+  dbConn.query("status", function(err,res){
+    if(err) {
+      console.log("error: ", err);
+      reject(err);
+    }
+    else{
+      logger.info(res);
+      resolve(res);
+    }
+  });
   let timer = new Date();
   return new Promise((resolve,reject) => {
     dbConn.query("INSERT INTO user (first_name, last_name, username, password) VALUES (?,?,?,?)",[first_name,last_name,username,password], function (err, res) {
