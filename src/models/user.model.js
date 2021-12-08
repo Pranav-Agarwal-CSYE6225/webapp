@@ -14,16 +14,6 @@ var User = function(first_name,last_name,username,password){
 };
 
 User.create = function (first_name,last_name,username,password) {
-  dbConn.query("status", function(err,res){
-    if(err) {
-      console.log("error: ", err);
-      reject(err);
-    }
-    else{
-      logger.info(res);
-      resolve(res);
-    }
-  });
   let timer = new Date();
   return new Promise((resolve,reject) => {
     dbConn.query("INSERT INTO user (first_name, last_name, username, password) VALUES (?,?,?,?)",[first_name,last_name,username,password], function (err, res) {
