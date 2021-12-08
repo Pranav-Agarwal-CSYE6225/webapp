@@ -9,9 +9,7 @@ var fs = require('fs');
 // Create db
 let con = mysql.createConnection({
   host     : (config.host).split(":")[0],
-  ssl                 : {
-    ca                : fs.readFileSync(__dirname + '/certs/rds-ca-2019-root.pem')
-  },
+  ssl                 : "Amazon RDS",
   user     : config.username,
   password : config.password,
   port : config.port,
@@ -19,9 +17,7 @@ let con = mysql.createConnection({
 });
 let dbConn = mysql.createConnection({
   host     : (config.host).split(":")[0],
-    ssl                 : {
-    ca                : fs.readFileSync(__dirname + '/certs/rds-ca-2019-root.pem')
-  },
+  ssl                 : "Amazon RDS",
   user     : config.username,
   password : config.password,
   database : config.database,

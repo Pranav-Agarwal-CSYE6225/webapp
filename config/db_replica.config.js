@@ -8,6 +8,7 @@ const logger = log.getLogger('logs');
 // Create db
 let dbConn_replica = mysql.createConnection({
   host     : (config.hostRdsReadReplica).split(":")[0],
+  ssl      : "Amazon RDS",
   user     : config.username,
   password : config.password,
   database : config.database,
