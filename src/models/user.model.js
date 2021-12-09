@@ -19,6 +19,7 @@ User.create = function (first_name,last_name,username,password) {
     dbConn.query("INSERT INTO user (first_name, last_name, username, password) VALUES (?,?,?,?)",[first_name,last_name,username,password], function (err, res) {
       if(err) {
         console.log("error: ", err);
+        logger.info("error: "+err);
         reject(err);
       }
       else{
@@ -30,11 +31,13 @@ User.create = function (first_name,last_name,username,password) {
 };
 
 User.findUser = function (username) {
+  logger.info("sdfasdfa");
   let timer = new Date();
   return new Promise((resolve,reject) => {
     dbConn_replica.query("Select * from user where username = ? ", username, function (err, res) {
     if(err) {
       console.log("error: ", err);
+      logger.info("error: "+err);
       reject(err);
     }
     else{
