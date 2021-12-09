@@ -68,10 +68,10 @@ exports.create = async function(req, res) {
       logger.info("4");
       const newUser = await User.findUser(username);
       logger.info("5");
-      delete newUser[0].password;
-      logger.info("created new user with ID "+newUser[0].id);
+      //delete newUser[0].password;
+      logger.info("created new user with ID ");
       Metrics.timing('user.POST.createUser.timer', timer);
-      res.status(201).json(newUser[0]);
+      res.status(201);
       return;
     }
     catch(err){
