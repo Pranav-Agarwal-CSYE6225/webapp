@@ -63,16 +63,18 @@ exports.create = async function(req, res) {
       await snsClient.publish(data).promise();
       logger.info("SNS published ");
       const hash = await bcrypt.hash(password, saltRounds);
-      logger.info("1");
       await User.create(first_name,last_name,username,hash);
-      logger.info("4");
-      const newUser = await User.findUser(username);
-      logger.info("5");
-      //delete newUser[0].password;
-      logger.info("created new user with ID ");
-      Metrics.timing('user.POST.createUser.timer', timer);
-      res.status(201);
-      return;
+      try{
+        const newUser = await User.findUser(username);
+        delete newUser[0].password;
+        logger.info("created new user");
+        Metrics.timing('user.POST.createUser.timer', timer);
+        res.status(201).json(newUser[0]);
+      }
+      catch(err){
+        console.log(err);
+        res.status(200).send({ error:false, message: 'User created' });
+      }
     }
     catch(err){
       console.log(err);
